@@ -6,6 +6,8 @@ const session = require('epress-session');
 const flash = require('connect-flash');
 require('dotenv').config();
 
+const webSocket = require('./socket');
+
 const indexRouter = require('./routes');
 
 const app = express();
@@ -44,6 +46,8 @@ app.use((err, req, res, next) => {
     res.render('error');
 });
 
-app.listen(app.get('port'), () => {
+const server = app.listen(app.get('port'), () => {
     console.log('Listening on port ', app.get('port'));
 });
+
+webSocket(server);

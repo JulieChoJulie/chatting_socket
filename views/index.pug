@@ -1,0 +1,15 @@
+doctype
+html
+    head
+        meta(charset='utf-8')
+        title GIF Chat Room
+    body
+        div Check network and console tabs by clicking F12
+        script.
+            var socket = io.connect('http://localhost:8085', {
+                path: '/socket.io',
+            });
+            socket.on('news', function(data) {
+                console.log(data);
+                socket.emit('reply', 'Hello Node.js');
+            });

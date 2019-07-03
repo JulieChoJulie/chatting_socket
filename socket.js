@@ -1,28 +1,24 @@
-const WebSocket = require('ws');
+const SocketIO = require('socket.io');
 
 module.exports = (server) => {
-    const wss = new WebSocket.Server({server});
+    const io = SocketIO(server, { path: '/socket.io' });
 
-    wss.on('connection', (ws, req) => {
+    io.on('connection', (socket) => {
+        const req = socket.request;
         const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        console.log('Accessed to client ', ip);
-        ws.on('message', (message) => {
-            console.log(message);
+        console.log('Successfully access to a new client.', ip, socket.id );
+        socket.on('disconnect', () => {
+            console.log('Disconnect the client access ', ip, socket.id);
+            clearInterval(socket.interval);
         });
-
-        ws.on('error', (error) => {
+        socket.on('error', (error) => {
             console.error(error);
         });
-
-        ws.on('close', () => {
-            console.log('Closing the access', ip);
-            clearInterval(ws.interval);
-        })
-        const interval = setInterval(() => {
-            if (ws.readyState === ws.OPEN) {
-                ws.send('Server is sending a message to a client.');
-            }
-        }, 3000);
-        ws.interval = interval;
-    });
-};
+        socket.on('reply', (data) => {
+            console.log(data);
+        });
+        socket.interval = setInterval(() => {
+            socket.emit('news', 'Hello Socket.IO');
+        }, 3000)
+    })
+}

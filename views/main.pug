@@ -3,7 +3,7 @@ extends layout
 block content
     h1 GIF CHAT
     fieldset
-        legend Chatroom list
+        legend Chatroom List
         table
             thead
                 tr
@@ -22,5 +22,56 @@ block content
                         td: button(data-password=password data-id=room._id).join-btn Join
         .error-message= error
         a(href='/room') Create a new chat
-        script(src='/socket.io/socket.io.js)
+        script(src='/socket.io/socket.io.js')
         script.
+            var socket = io.connect('http://localhost:8005/room', {
+                path: '/socket.io'
+            });
+            socket.on('newRoom', function(data) {
+                var tr = document.createElement('tr');
+                var td = document.createElement('td');
+                td.textContent = data.title;
+                tr.appendChild(td);
+                td = document.createElement('td');
+                td.textContent = data.password ? 'Secret Chatroom' : 'Public Chatroom';
+                tr.appendChild(td);
+                td = document.createElement('td');
+                td.textContent = data.max;
+                tr.appendChild(td);
+                td = document.createElement('td');
+                td.style.color = data.owner;
+                td.textContent = data.owner;
+                tr.appendChild(td);
+                td = document.createElement('td');
+                var button = document.createElement('button');
+                button.textContent = 'Join';
+                button.dataset.password = data.password ? 'true' : 'false';
+                button.dataset.id = data._id;
+                button.addEventListener('click', addBtnEvent);
+                td.appendChild(button);
+                tr.appendChild(td);
+                tr.dataset.id = data._id;
+                document.querySelector('table tbody').appendChild(tr);
+            });
+            socket.on('removeRoom', function(data){
+                document.querySelectorAll('tbody tr').forEach(function(tr) {
+                    if (tr.dataset.id == data) {
+                        tr.parentNode.removeChild(tr);
+                    }
+                });
+            });
+            function addBtnEvent(e) {
+                if (e.target.dataset.password === 'true') {
+                    const password = prompt('Enter a password');
+                    location.href = '/room/' + e.target.dataset.id + '?password=' + password;
+                } else {
+                    location.href = '/room/' + e.target.dataset.id;
+                }
+            }
+
+            document.querySelectorAll('.join-btn').forEach(function(btn){
+                btn.addEventListener('click', addBtnEvent);
+            })
+
+
+}

@@ -1,24 +1,31 @@
 const SocketIO = require('socket.io');
 
-module.exports = (server) => {
+module.exports = (server, app) => {
     const io = SocketIO(server, { path: '/socket.io' });
 
-    io.on('connection', (socket) => {
-        const req = socket.request;
-        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        console.log('Successfully access to a new client.', ip, socket.id );
+    app.set('io', io);
+    const room = io.of('/room');
+    const chat = io.of('/chat');
+
+    room.on('connection', (socket) => {
+        console.log('connect to room name space');
         socket.on('disconnect', () => {
-            console.log('Disconnect the client access ', ip, socket.id);
-            clearInterval(socket.interval);
+            console.log('disconnect with room name space');
         });
-        socket.on('error', (error) => {
-            console.error(error);
+    });
+
+    chat.on('connection', (socket) => {
+        console.log('connect to chat name space');
+        const req = socket.request;
+        const { headers: { referer } } = req;
+        const roomId = referer
+            .split('/')[referer.split('/').length -1]
+            .replace(/\?.+/, '');
+        socket.join(roomId);
+        socket.on('disconnect', () => {
+            console.lg('disconnect with chat name space');
+            socket.leave(roomId);
         });
-        socket.on('reply', (data) => {
-            console.log(data);
-        });
-        socket.interval = setInterval(() => {
-            socket.emit('news', 'Hello Socket.IO');
-        }, 3000)
-    })
-}
+    });
+
+};

@@ -33,7 +33,7 @@ module.exports = (server, app, sessionMiddleware) => {
             chat: `${req.session.color} is entered.`,
         });
         socket.on('disconnect', () => {
-            console.lg('disconnect with chat name space');
+            console.log('disconnect with chat name space');
             socket.leave(roomId);
             const currentRoom = socket.adapter.rooms[roomId];
             const userCount = currentRoom ? currentRoom.length : 0;

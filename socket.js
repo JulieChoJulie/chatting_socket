@@ -51,8 +51,6 @@ module.exports = (server, app, sessionMiddleware) => {
                     chat: `${req.session.color} exits the room.`,
                 });
             }
-
         });
     });
-
 };

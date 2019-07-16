@@ -2,7 +2,12 @@ extends layout
 
 block content
     h1= title
-    a#exit-btn(data-id=room._id) Exit
+    a#exit-btn(href='/') Exit
+    h4
+        | occupancy:
+        span#occup-num= occup
+        | /
+        = room.max
     fieldset
         legend Chat
         #chat-list
@@ -35,6 +40,10 @@ block content
                 path: '/socket.io'
             });
             socket.on('join', function(data) {
+                var num = document.createElement('span');
+                document.querySelector('#occup-num').textContent = data.occup;
+                document.querySelector('#occup-num').appendChild(num);
+                console.log(data.occup);
                 var div = document.createElement('div');
                 div.classList.add('system');
                 var chat = document.createElement('div');
@@ -43,6 +52,10 @@ block content
                 document.querySelector('#chat-list').appendChild(div);
             });
             socket.on('exit', function(data) {
+                var num = document.createElement('span');
+                num.textContent = data.occup
+                document.querySelector('#occup-num').textContent = '';
+                document.querySelector('#occup-num').appendChild(num);
                 var div = document.createElement('div');
                 div.classList.add('system');
                 var chat = document.createElement('div');

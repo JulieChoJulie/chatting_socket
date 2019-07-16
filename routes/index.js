@@ -60,11 +60,9 @@ router.get('/room/:id', async (req, res, next) => {
         }
 
         const chats = await Chat.find({ room: req.params.id }).sort('createdAt');
-        room.occup += 1;
-        await room.save();
-        console.log(room.occup);
         return res.render('chat', {
             room,
+            occup: (rooms && rooms[req.params.id] && rooms[req.params.id].length + 1) || 1,
             title: room.title,
             chats,
             user: req.session.color,

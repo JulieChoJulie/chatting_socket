@@ -29,6 +29,7 @@ module.exports = (server, app, sessionMiddleware) => {
             .replace(/\?.+/, '');
         socket.join(roomId);
         socket.to(roomId).emit('join', {
+            occup: socket.adapter.rooms[roomId].length,
             user: 'system',
             chat: `${req.session.color} is entered.`,
         });
@@ -48,6 +49,7 @@ module.exports = (server, app, sessionMiddleware) => {
                     });
             } else {
                 socket.to(roomId).emit('exit', {
+                    occup: socket.adapter.rooms[roomId].length,
                     user: 'system',
                     chat: `${req.session.color} exits the room.`,
                 });

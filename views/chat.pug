@@ -2,7 +2,7 @@ extends layout
 
 block content
     h1= title
-    a#exit-btn(href='/') Exit
+    a#exit-btn(data-id=room._id) Exit
     fieldset
         legend Chat
         #chat-list
@@ -105,3 +105,6 @@ block content
                 xhr.send(formData);
             });
 
+            document.querySelector('#exit-btn').addEventListener('click', function(e){
+                location.href = `/room/${e.target.dataset.id}/exit`;
+            })

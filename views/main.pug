@@ -16,7 +16,8 @@ block content
                     tr(data-id=room._id)
                         td= room.title
                         td= room.password ? 'Secret Chatroom' : 'Public Chatroom'
-                        td= room.max
+                        -var occup = `${room.occup} / ${room.max}`
+                        td= occup
                         td(style='color:' +room.owner)= room.owner
                         -var password = room.password ? 'true' : 'false'
                         td: button(data-password=password data-id=room._id).join-btn Join

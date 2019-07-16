@@ -12,6 +12,12 @@ const roomSchema = new Schema({
         default: 10,
         min: 2,
     },
+    occup: {
+        type: Number,
+        requied: true,
+        default: 0,
+        min: 0,
+    },
     owner: {
         type: String,
         required: true

@@ -59,8 +59,10 @@ router.get('/room/:id', async (req, res, next) => {
             return res.redirect('/');
         }
 
-        const chats = await Chat.find({ room: room._id }).sort('createdAt');
-
+        const chats = await Chat.find({ room: req.params.id }).sort('createdAt');
+        room.occup += 1;
+        await room.save();
+        console.log(room.occup);
         return res.render('chat', {
             room,
             title: room.title,
@@ -134,6 +136,20 @@ router.post('/room/:id/gif', upload.single('gif'), async (req, res, next) => {
         await chat.save();
         req.app.get('io').of('/chat').to(req.params.id).emit('chat', chat);
         res.send('ok');
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+});
+
+router.get('/room/:id/exit', async (req, res, next) => {
+    try {
+        const room = await Room.findOne({ _id: req.params.id });
+        if (room) {
+            room.occup -= 1;
+            room.save();
+        }
+        res.redirect('/');
     } catch (error) {
         console.error(error);
         next(error);
